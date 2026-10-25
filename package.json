@@ -1,0 +1,21 @@
+{
+  "name": "jansahayak-ai",
+  "version": "1.0.0",
+  "description": "Indic Citizen Welfare Schemes & CPGRAMS Grievance Voice Copilot",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "indic-ai",
+    "sarvam-ai",
+    "digital-india",
+    "civic-tech",
+    "speech-to-text",
+    "schemes",
+    "cpgrams"
+  ],
+  "author": "Hackathon Team",
+  "license": "MIT"
+}

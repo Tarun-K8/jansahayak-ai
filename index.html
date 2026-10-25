@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JanSahayak AI | जन सहायक - Indic Welfare & Grievance Copilot</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            saffron: '#FF671F',
+            indiaGreen: '#046A38',
+            ashokaNavy: '#06038D',
+            warmGray: '#F9FAFB'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 103, 31, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(255, 103, 31, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 103, 31, 0); }
+    }
+    .listening-glow {
+      animation: pulse-ring 1.8s infinite;
+    }
+    .tricolor-stripe {
+      background: linear-gradient(90deg, #FF671F 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #046A38 66.6%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen font-sans flex flex-col antialiased">
+
+  <!-- Top Tricolor Bar -->
+  <div class="h-1.5 w-full tricolor-stripe"></div>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 via-amber-500 to-emerald-600 flex items-center justify-center text-white shadow-md font-bold text-xl">
+          जन
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight text-slate-900">JanSahayak AI <span class="text-orange-600 font-normal">| जन सहायक</span></h1>
+            <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">Indic Copilot</span>
+          </div>
+          <p class="text-xs text-slate-500">Citizen Welfare Schemes & CPGRAMS Grievance Voice Assistant</p>
+        </div>
+      </div>
+
+      <!-- Language Selector & Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+          <span class="text-slate-500 px-1">भाषा:</span>
+          <select id="langSelect" class="bg-white rounded px-2 py-1 text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-300">
+            <option value="hi" selected>🇮🇳 हिन्दी (Hindi)</option>
+            <option value="en">🌐 English</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+          </select>
+        </div>
+
+        <button id="apiKeyToggleBtn" class="text-xs text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1.5 rounded-lg flex items-center space-x-1 transition shadow-sm">
+          <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+          <span class="hidden sm:inline">API Config</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- API Key Modal (Optional for Judges / Evaluators) -->
+  <div id="apiKeyModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-slate-800 flex items-center space-x-2">
+          <span>⚙️ Gemini API Configuration</span>
+        </h3>
+        <button id="closeApiModal" class="text-slate-400 hover:text-slate-600">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4">
+        JanSahayak AI works <strong>100% offline</strong> with built-in Indic AI scheme indexing. Optionally connect Google Gemini 1.5/2.0 API for open-domain multilingual intelligence.
+      </p>
+      <input type="password" id="geminiApiKeyInput" placeholder="Enter Gemini API Key (Optional)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 mb-3 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+      <div class="flex justify-end space-x-2">
+        <button id="saveApiKeyBtn" class="bg-orange-600 text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-orange-700">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col space-y-6">
+
+    <!-- Hackathon Stage Demo Bar (1-Click Presets) -->
+    <div class="bg-gradient-to-r from-orange-50 via-white to-emerald-50 border border-orange-200 rounded-2xl p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-2.5">
+        <div class="flex items-center space-x-2">
+          <span class="bg-orange-600 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider">Fast Demo</span>
+          <span class="text-xs font-bold text-slate-800">Quick 1-Click Stage Showcase Scenarios:</span>
+        </div>
+        <span class="text-[11px] text-slate-500 hidden sm:inline">Click any scenario to simulate instant citizen input</span>
+      </div>
+      <div id="presetsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- Voice & Query Input Section -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <label for="queryInput" class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+          <span class="text-orange-500">🎙️</span>
+          <span id="inputSectionTitle">अपनी समस्या या जरूरत बोलें या लिखें (Ask by Voice or Text):</span>
+        </label>
+        <span id="micStatus" class="text-xs font-medium text-slate-500 flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Mic Ready</span>
+        </span>
+      </div>
+
+      <!-- Input Box & Mic Button -->
+      <div class="relative flex items-center">
+        <textarea id="queryInput" rows="2" placeholder="उदाहरण: 'मैं एक डिलीवरी बॉय हूँ, क्या मेरे लिए कोई सरकारी स्वास्थ्य और पेंशन योजना है?' या 'गाँव में 10 दिन से बिजली कटी है शिकायत करें'..." class="w-full text-slate-800 text-sm border-2 border-slate-200 rounded-xl p-3.5 pr-28 focus:border-orange-500 focus:outline-none transition resize-none"></textarea>
+
+        <div class="absolute right-2.5 flex items-center space-x-1.5">
+          <!-- Clear Button -->
+          <button id="clearBtn" title="Clear text" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+
+          <!-- Voice Mic Button -->
+          <button id="voiceBtn" title="Click to Speak" class="bg-gradient-to-tr from-orange-500 to-amber-500 text-white p-3 rounded-xl shadow-md hover:from-orange-600 hover:to-amber-600 transition flex items-center justify-center">
+            <svg id="micIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit / Trigger Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div class="flex items-center space-x-2 text-xs text-slate-500">
+          <span class="inline-block w-2 h-2 rounded-full bg-orange-400"></span>
+          <span>Automatic Intent Classifier: <strong>Welfare Schemes Matcher</strong> &amp; <strong>CPGRAMS Grievance Drafter</strong></span>
+        </div>
+
+        <button id="analyzeBtn" class="bg-slate-900 hover:bg-black text-white text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-xl shadow-md transition flex items-center space-x-2">
+          <span>समाधान खोजें (Analyze &amp; Assist)</span>
+          <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsContainer" class="hidden space-y-6">
+
+      <!-- Voice Narration Card -->
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold">
+            🔊
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-amber-900" id="audioCardTitle">आवाज़ में सुनें (Spoken Indic Summary):</h4>
+            <p class="text-[11px] text-amber-700" id="audioCardSubtitle">Tap button to play audio narration in your selected language</p>
+          </div>
+        </div>
+        <button id="speakResultBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 transition shadow">
+          <span>▶️ सुनें (Listen)</span>
+        </button>
+      </div>
+
+      <!-- Two-Column Response: Scheme Details & Grievance Draft -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Scheme Matching Card (Col 1-7) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div id="schemeCard" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- CPGRAMS / Grievance Draft Card (Col 8-12) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div id="grievanceCard" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 flex flex-col justify-between">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Empty State / Welcome Splash -->
+    <div id="emptyState" class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center space-y-4">
+      <div class="w-16 h-16 mx-auto rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-3xl">
+        🇮🇳
+      </div>
+      <div class="max-w-md mx-auto space-y-1.5">
+        <h3 class="text-lg font-bold text-slate-800">1.4 अरब नागरिकों के लिए डिजिटल सहारा</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Select one of the <strong>Stage Showcase Scenarios</strong> above, or click the <strong>Microphone 🎙️</strong> to speak in Hindi/English. We will instantly identify eligible government welfare benefits and draft official CPGRAMS grievances.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-4 text-center text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-semibold text-slate-700">JanSahayak AI</span> — Built for India's 45-Min AI Buildathon
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Inspired by Sarvam AI Indic Stack</span>
+        <span class="text-slate-300">|</span>
+        <a href="https://pgportal.gov.in" target="_blank" class="hover:underline text-slate-600">CPGRAMS Portal</a>
+        <span class="text-slate-300">|</span>
+        <a href="https://www.myscheme.gov.in" target="_blank" class="hover:underline text-slate-600">myScheme India</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
