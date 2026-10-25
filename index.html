@@ -57,12 +57,17 @@
       </div>
 
       <!-- Language Selector & Controls -->
-      <div class="flex items-center space-x-2 sm:space-x-4">
-        <span class="hidden md:inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <a href="#videoSection" class="text-xs bg-slate-900 hover:bg-black text-white px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition shadow-sm font-semibold">
+          <span>🎬</span>
+          <span class="hidden sm:inline">वीडियो डेमो</span>
+          <span>(Video Demo)</span>
+        </a>
+        <span class="hidden lg:inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
           ⚡ Sarvam AI Ready (Bulbul &amp; Saaras)
         </span>
-        <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
-          <span class="text-slate-500 px-1">भाषा:</span>
+        <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+          <span class="text-slate-500 px-1 hidden sm:inline">भाषा:</span>
           <select id="langSelect" class="bg-white rounded px-2 py-1 text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-300">
             <option value="hi" selected>🇮🇳 हिन्दी (Hindi)</option>
             <option value="en">🌐 English</option>
@@ -75,7 +80,7 @@
 
         <button id="apiKeyToggleBtn" class="text-xs text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1.5 rounded-lg flex items-center space-x-1 transition shadow-sm">
           <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-          <span class="font-bold text-orange-600">Sarvam API Key</span>
+          <span class="font-bold text-orange-600 hidden sm:inline">Sarvam API Key</span>
         </button>
       </div>
     </div>
@@ -102,6 +107,56 @@
 
   <!-- Main Content -->
   <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col space-y-6">
+
+    <!-- 16:9 Video Demo Walkthrough Section -->
+    <div id="videoSection" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl text-white space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <span class="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-base shadow">🎬</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-white flex items-center space-x-2">
+              <span>How JanSahayak AI Works</span>
+              <span class="text-xs font-normal text-orange-400">| वीडियो वॉकथ्रू (45s Showcase)</span>
+            </h2>
+            <p class="text-xs text-slate-400">Watch automated Indic voice recognition, welfare scheme matching, and CPGRAMS grievance drafting</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="videoLangToggle" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg font-medium transition">
+            🇮🇳 हिन्दी
+          </button>
+          <button id="videoDownloadBtn" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition shadow">
+            <span>📥 Download .WebM Video</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 16:9 Cinema Canvas Screen -->
+      <div id="videoContainer" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center">
+        <canvas id="videoCanvas" width="1280" height="720" class="w-full h-full object-contain"></canvas>
+      </div>
+
+      <!-- Video Controls Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div class="flex items-center space-x-3">
+          <button id="videoPlayBtn" class="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow flex items-center space-x-1.5">
+            <span>▶️ Play Video</span>
+          </button>
+          <span id="videoTimeDisplay" class="text-xs font-mono text-slate-400 font-semibold">0:00 / 0:45</span>
+        </div>
+
+        <!-- Progress Scrubber -->
+        <div class="flex-1 max-w-md mx-2">
+          <input type="range" id="videoProgressBar" min="0" max="45" value="0" step="0.1" class="w-full accent-orange-500 cursor-pointer">
+        </div>
+
+        <div class="text-[11px] text-slate-400 flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Bilingual Spoken Narration (Bulbul Audio)</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Hackathon Stage Demo Bar (1-Click Presets) -->
     <div class="bg-gradient-to-r from-orange-50 via-white to-emerald-50 border border-orange-200 rounded-2xl p-4 shadow-sm">
@@ -235,6 +290,14 @@
 
   <!-- Scripts -->
   <script src="data.js"></script>
+  <script src="video-demo.js"></script>
   <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.initJanSahayakVideo) {
+        window.initJanSahayakVideo();
+      }
+    });
+  </script>
 </body>
 </html>

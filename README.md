@@ -60,6 +60,14 @@ The copilot instantly:
 
 ---
 
+## 🎬 Live 45-Second Video Walkthrough
+The web application features an interactive, synchronized **16:9 HD Video Demo** directly embedded on the landing page:
+* **Visual Graphics & Scene Transitions:** Covers Problem Statement, Voice AI, Welfare Matching, CPGRAMS Drafting, and WhatsApp sharing.
+* **Bilingual Audio Voiceover:** Narrated in Hindi and Indian English.
+* **1-Click WebM Video Download:** Powered by HTML5 Canvas & MediaRecorder API to export the demo video file locally.
+
+---
+
 ## ⚡ Quick 1-Click Stage Demo Scenarios
 To guarantee a zero-fail 90-second stage presentation, the UI includes instant demo presets:
 1. 🌾 **Kisan (Farmer)**: *PM-KISAN Samman Nidhi & KCC Fertilizer Assistance*
