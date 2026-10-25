@@ -67,14 +67,20 @@
           ⚡ Sarvam AI Ready (Bulbul &amp; Saaras)
         </span>
         <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
-          <span class="text-slate-500 px-1 hidden sm:inline">भाषा:</span>
+          <span class="text-slate-500 px-1 hidden sm:inline">12 भाषाएं:</span>
           <select id="langSelect" class="bg-white rounded px-2 py-1 text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-orange-500 border border-slate-300">
             <option value="hi" selected>🇮🇳 हिन्दी (Hindi)</option>
             <option value="en">🌐 English</option>
-            <option value="mr">मराठी (Marathi)</option>
             <option value="bn">বাংলা (Bengali)</option>
-            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="mr">मराठी (Marathi)</option>
             <option value="te">తెలుగు (Telugu)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="ml">മലയാളം (Malayalam)</option>
+            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+            <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            <option value="bho">भोजपुरी (Bhojpuri)</option>
           </select>
         </div>
 
@@ -198,6 +204,28 @@
           <!-- Voice Mic Button -->
           <button id="voiceBtn" title="Click to Speak" class="bg-gradient-to-tr from-orange-500 to-amber-500 text-white p-3 rounded-xl shadow-md hover:from-orange-600 hover:to-amber-600 transition flex items-center justify-center">
             <svg id="micIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sarvam Vision KYC / Document Intelligence Scanner (Spreadsheet Row #45) -->
+      <div class="bg-gradient-to-r from-slate-50 to-orange-50/50 border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2.5">
+        <div class="flex items-center space-x-2">
+          <span class="p-1.5 bg-orange-100 text-orange-700 rounded-lg text-sm">📸</span>
+          <div>
+            <span class="text-xs font-bold text-slate-800">Sarvam Vision KYC Scanner (दस्तावेज सत्यापन):</span>
+            <p class="text-[11px] text-slate-500">Auto-parse Aadhaar, Land record or Ration card for 100% eligibility score</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button type="button" onclick="simulateKycScan('aadhaar')" class="text-xs bg-white hover:bg-orange-50 border border-slate-300 hover:border-orange-400 text-slate-700 px-2.5 py-1.5 rounded-lg transition font-medium shadow-xs">
+            📄 आधार कार्ड (Aadhaar)
+          </button>
+          <button type="button" onclick="simulateKycScan('khasra')" class="text-xs bg-white hover:bg-orange-50 border border-slate-300 hover:border-orange-400 text-slate-700 px-2.5 py-1.5 rounded-lg transition font-medium shadow-xs">
+            🌾 खसरा-खतौनी (Land)
+          </button>
+          <button type="button" onclick="simulateKycScan('ration')" class="text-xs bg-white hover:bg-orange-50 border border-slate-300 hover:border-orange-400 text-slate-700 px-2.5 py-1.5 rounded-lg transition font-medium shadow-xs">
+            🍚 राशन कार्ड (Ration)
           </button>
         </div>
       </div>

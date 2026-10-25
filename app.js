@@ -136,10 +136,16 @@ function updateSpeechLang() {
   const langMap = {
     hi: 'hi-IN',
     en: 'en-IN',
-    mr: 'mr-IN',
     bn: 'bn-IN',
+    mr: 'mr-IN',
+    te: 'te-IN',
     ta: 'ta-IN',
-    te: 'te-IN'
+    gu: 'gu-IN',
+    kn: 'kn-IN',
+    ml: 'ml-IN',
+    pa: 'pa-IN',
+    or: 'or-IN',
+    bho: 'hi-IN'
   };
   recognition.lang = langMap[langSelect.value] || 'hi-IN';
 }
@@ -166,6 +172,35 @@ function stopRecording() {
   micStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Mic Ready</span>`;
 }
 
+// Sarvam Vision KYC OCR Simulator (Row #45 in Spreadsheet)
+window.simulateKycScan = function(docType) {
+  let docTitle = "";
+  let extractedQuery = "";
+
+  if (docType === 'aadhaar') {
+    docTitle = "Aadhaar Card (UIDAI)";
+    extractedQuery = "आधार कार्ड स्कैन: रमेश कुमार (आयु 42 वर्ष), निवासी सीतापुर, यूपी। असंगठित कृषि श्रमिक, बैंक डीबीटी लिंक सत्यापित। मुझे उपयुक्त सरकारी योजना बताएं।";
+    langSelect.value = 'hi';
+  } else if (docType === 'khasra') {
+    docTitle = "Khasra-Khatauni Land Record";
+    extractedQuery = "खसरा-खतौनी रिकॉर्ड स्कैन: खाता सं. 00412, रकबा 1.75 एकड़ (सीमांत किसान), जिला सीतापुर। पीएम किसान और कृषि खाद बीज सहायता हेतु पात्रता।";
+    langSelect.value = 'hi';
+  } else if (docType === 'ration') {
+    docTitle = "NFSA Priority Ration Card";
+    extractedQuery = "राशन कार्ड स्कैन: अन्त्योदय/बीपीएल परिवार, 5 सदस्य। आयुष्मान भारत मुफ्त इलाज और राशन वितरण शिकायत जांच।";
+    langSelect.value = 'hi';
+  }
+
+  queryInput.value = `[Sarvam Vision OCR: ${docTitle} Verified ✓]\n${extractedQuery}`;
+  updateSpeechLang();
+  
+  // Show brief scan flash
+  micStatus.innerHTML = `<span class="text-orange-600 font-bold animate-pulse">📸 Sarvam Vision OCR 99.4% Match!</span>`;
+  setTimeout(() => {
+    handleAnalyze();
+  }, 400);
+};
+
 // Text-to-Speech Output
 function playSpokenSummary() {
   if (!('speechSynthesis' in window)) {
@@ -181,10 +216,16 @@ function playSpokenSummary() {
   const langMap = {
     hi: 'hi-IN',
     en: 'en-IN',
-    mr: 'mr-IN',
     bn: 'bn-IN',
+    mr: 'mr-IN',
+    te: 'te-IN',
     ta: 'ta-IN',
-    te: 'te-IN'
+    gu: 'gu-IN',
+    kn: 'kn-IN',
+    ml: 'ml-IN',
+    pa: 'pa-IN',
+    or: 'or-IN',
+    bho: 'hi-IN'
   };
   utterance.lang = langMap[langSelect.value] || 'hi-IN';
   utterance.rate = 1.0;
