@@ -91,44 +91,96 @@ window.applyPreset = function(idx) {
   handleAnalyze();
 };
 
-// Web Speech API - Speech-to-Text
+// Robust Web Speech API - Speech-to-Text & Text-to-Speech Engine
+let availableVoices = [];
+let speechSilenceTimer = null;
+
+// Preload & Cache Voices for Chrome, Safari & Edge
+function loadVoices() {
+  if (!('speechSynthesis' in window)) return;
+  availableVoices = window.speechSynthesis.getVoices();
+}
+loadVoices();
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
 function setupSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    micStatus.innerHTML = `<span class="text-amber-600">Mic fallback mode</span>`;
+    if (micStatus) micStatus.innerHTML = `<span class="text-amber-600 font-semibold">⚠️ Mic fallback mode</span>`;
     return;
   }
 
-  recognition = new SpeechRecognition();
-  recognition.continuous = false;
-  recognition.interimResults = true;
-  updateSpeechLang();
+  try {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true; // Keep listening until user pauses or stops
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    updateSpeechLang();
 
-  recognition.onstart = () => {
-    isRecording = true;
-    voiceBtn.classList.add('listening-glow', 'bg-red-500', 'from-red-500', 'to-rose-600');
-    micStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span><span class="text-red-600 font-semibold">बोलिए... (Listening)</span>`;
-  };
+    recognition.onstart = () => {
+      isRecording = true;
+      if (voiceBtn) {
+        voiceBtn.classList.add('listening-glow', 'bg-red-500', 'from-red-500', 'to-rose-600');
+      }
+      if (micStatus) {
+        micStatus.innerHTML = `
+          <span class="flex items-center space-x-1">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+            <span class="text-red-600 font-bold">सुन रहे हैं... (Listening live)</span>
+          </span>
+        `;
+      }
+    };
 
-  recognition.onresult = (event) => {
-    let transcript = "";
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      transcript += event.results[i][0].transcript;
-    }
-    queryInput.value = transcript;
-  };
+    recognition.onresult = (event) => {
+      let finalTranscript = "";
+      let interimTranscript = "";
 
-  recognition.onerror = (event) => {
-    console.error("Speech error:", event.error);
-    stopRecording();
-  };
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript;
+        }
+      }
 
-  recognition.onend = () => {
-    stopRecording();
-    if (queryInput.value.trim().length > 3) {
-      handleAnalyze();
-    }
-  };
+      if (finalTranscript || interimTranscript) {
+        queryInput.value = (finalTranscript + interimTranscript).trim();
+      }
+
+      // Reset auto-analyze debounce timer on speech detected
+      if (speechSilenceTimer) clearTimeout(speechSilenceTimer);
+      speechSilenceTimer = setTimeout(() => {
+        if (isRecording && queryInput.value.trim().length > 4) {
+          stopRecording();
+          handleAnalyze();
+        }
+      }, 2200); // 2.2 seconds of silence triggers automatic analysis
+    };
+
+    recognition.onerror = (event) => {
+      console.warn("Speech recognition notice:", event.error);
+      if (event.error === 'not-allowed') {
+        alert("Please grant microphone permissions in your browser address bar.");
+      }
+      stopRecording();
+    };
+
+    recognition.onend = () => {
+      if (isRecording) {
+        // If stopped unexpectedly, clean up
+        stopRecording();
+        if (queryInput.value.trim().length > 4) {
+          handleAnalyze();
+        }
+      }
+    };
+  } catch (err) {
+    console.error("Speech initialization error:", err);
+  }
 }
 
 function updateSpeechLang() {
@@ -152,24 +204,42 @@ function updateSpeechLang() {
 
 function toggleVoiceRecording() {
   if (!recognition) {
-    alert("Speech recognition isn't supported in this browser. Please use Chrome/Edge or type directly.");
+    alert("Speech recognition isn't supported in this browser. Please use Google Chrome, Edge, or Brave.");
     return;
   }
   if (isRecording) {
-    recognition.stop();
+    stopRecording();
+    if (queryInput.value.trim().length > 3) {
+      handleAnalyze();
+    }
   } else {
     try {
+      updateSpeechLang();
       recognition.start();
     } catch (e) {
-      console.warn("Recognition already started", e);
+      console.warn("Recognition already active", e);
+      try {
+        recognition.stop();
+        setTimeout(() => recognition.start(), 200);
+      } catch (err2) {
+        console.error(err2);
+      }
     }
   }
 }
 
 function stopRecording() {
   isRecording = false;
-  voiceBtn.classList.remove('listening-glow', 'bg-red-500', 'from-red-500', 'to-rose-600');
-  micStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Mic Ready</span>`;
+  if (speechSilenceTimer) clearTimeout(speechSilenceTimer);
+  if (voiceBtn) {
+    voiceBtn.classList.remove('listening-glow', 'bg-red-500', 'from-red-500', 'to-rose-600');
+  }
+  if (micStatus) {
+    micStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-emerald-700 font-medium">Mic Active &amp; Ready</span>`;
+  }
+  if (recognition) {
+    try { recognition.stop(); } catch (e) {}
+  }
 }
 
 // Sarvam Vision KYC OCR Simulator (Row #45 in Spreadsheet)
@@ -201,7 +271,17 @@ window.simulateKycScan = function(docType) {
   }, 400);
 };
 
-// Text-to-Speech Output
+// Quick Voice Prompt Helper (Instant Audio & Text Trigger)
+window.quickVoicePrompt = function(promptText, lang) {
+  queryInput.value = promptText;
+  if (lang) {
+    langSelect.value = lang;
+    updateSpeechLang();
+  }
+  handleAnalyze();
+};
+
+// Text-to-Speech Output with Enhanced Clarity and Voice Selection
 function playSpokenSummary() {
   if (!('speechSynthesis' in window)) {
     alert("Text-to-speech is not supported by your browser.");
@@ -227,18 +307,53 @@ function playSpokenSummary() {
     or: 'or-IN',
     bho: 'hi-IN'
   };
-  utterance.lang = langMap[langSelect.value] || 'hi-IN';
-  utterance.rate = 1.0;
+  const targetLang = langMap[langSelect.value] || 'hi-IN';
+  utterance.lang = targetLang;
+  utterance.rate = 0.95; // Natural, clear conversational pacing
+  utterance.pitch = 1.0;
 
-  // Try to find native voice
+  // Smart Voice Matcher for Indian Accents & Regional Dialects
   const voices = window.speechSynthesis.getVoices();
-  const matchedVoice = voices.find(v => v.lang.startsWith(langSelect.value));
-  if (matchedVoice) utterance.voice = matchedVoice;
+  let matchedVoice = null;
+
+  if (voices.length > 0) {
+    // 1. Try exact language match
+    matchedVoice = voices.find(v => v.lang === targetLang || v.lang === targetLang.replace('-', '_'));
+    
+    // 2. Try prefix match
+    if (!matchedVoice) {
+      matchedVoice = voices.find(v => v.lang.startsWith(langSelect.value));
+    }
+    
+    // 3. Try Indian English voice if Indic not found
+    if (!matchedVoice && (langSelect.value === 'en' || !matchedVoice)) {
+      matchedVoice = voices.find(v => v.lang.includes('en-IN') || v.name.toLowerCase().includes('india'));
+    }
+
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+  }
+
+  // Workaround for Chrome's 15-second speech synthesis garbage collector pause bug
+  const speechInterval = setInterval(() => {
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.resume();
+    } else {
+      clearInterval(speechInterval);
+    }
+  }, 5000);
 
   utterance.onstart = () => {
-    speakResultBtn.innerHTML = `<span>⏹️ रोकें (Stop)</span>`;
+    speakResultBtn.innerHTML = `<span>⏹️ रोकें (Stop Audio)</span>`;
   };
   utterance.onend = () => {
+    clearInterval(speechInterval);
+    speakResultBtn.innerHTML = `<span>▶️ सुनें (Listen)</span>`;
+  };
+  utterance.onerror = (e) => {
+    clearInterval(speechInterval);
+    console.warn("Speech synthesis notice:", e);
     speakResultBtn.innerHTML = `<span>▶️ सुनें (Listen)</span>`;
   };
 
